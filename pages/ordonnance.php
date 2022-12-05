@@ -31,14 +31,14 @@
 
 		$conditionLab = isset($_POST['lab']) && $_POST['lab'] != "TOUS";
 		$conditionMedic = isset($_POST['typeMedic']) && $_POST['typeMedic'] != "TOUS";
-		$conditionDesign = isset($_POST['Designation']);
+		$conditionDesign = isset($_POST['Designation']) && $_POST['Designation'] != "";
 
 
 
 		
 		
 		
-		if (isset($_POST['Designation'])) {
+		if ($conditionDesign) {
 			$requete = $requete . " Designation LIKE :designation";
 			$param['designation'] = "%". $_POST['Designation'] ."%";
 		}
@@ -100,9 +100,9 @@
 					<form method="post">
 						<input type="hidden" name="supprimer" value="test">
 						<button type="submit">
-						<span class="material-symbols-outlined">
-							delete
-						</span>
+							<span class="material-symbols-outlined">
+								delete
+							</span>
 						</button>
 					</form>
 					
@@ -115,9 +115,23 @@
 			<!--- Ligne Formulaire de recherche -->
 			<td class="largeurColonne40">
 				<h1>Recherche</h1>
+				<form method="post">
+					Désignation à rechercher :
+					<input type="hidden" name="lab" value="TOUS">
+					<input type="hidden" name="typeMedic" value="TOUS">
+					<input type="hidden" name="Designation" value="">
+					<button type="submit">
+						<span class="material-symbols-outlined">
+							delete
+						</span>
+					</button>
+				</form>
 				<form method="post" action="#" ID="formRecherche">
 					<h2>
-						Désignation à rechercher : <input class="form-control" name="Designation" id="Designation" value="<?php if (isset($_POST['Designation'])) { echo $_POST['Designation']; } ?>" placeholder="Tapez un mot à rechercher"> <br/>
+						
+
+						<input class="form-control" name="Designation" id="Designation" value="<?php if (isset($_POST['Designation'])) { echo $_POST['Designation']; } ?>" placeholder="Tapez un mot à rechercher">
+
 						Type de médicament : 
 						<select ID="typeMedic" name="typeMedic" class="form-control">
 							<option>TOUS</option>
