@@ -25,21 +25,20 @@
 		$tabTypes = $pdo->query("SELECT DISTINCT(type) FROM medicaments ORDER BY type");
 		$tabLab = $pdo->query("SELECT DISTINCT(labo) FROM medicaments ORDER BY labo");
 
-		$requete = "SELECT designation,type,labo,id FROM medicaments WHERE";
+		$requete = "SELECT designation,type,labo,id FROM medicaments WHERE Designation LIKE :designation";
 
 		$param = array();
 
 		$conditionLab = isset($_POST['lab']) && $_POST['lab'] != "TOUS";
 		$conditionMedic = isset($_POST['typeMedic']) && $_POST['typeMedic'] != "TOUS";
-		$conditionDesign = isset($_POST['Designation']) && $_POST['Designation'] != "";
-
+		$conditionDesign = isset($_POST['Designation']);
+		$param['designation'] = "aaaaaaaaaaa";
 
 
 		
 		
 		
 		if ($conditionDesign) {
-			$requete = $requete . " Designation LIKE :designation";
 			$param['designation'] = "%". $_POST['Designation'] ."%";
 		}
 		
@@ -60,7 +59,6 @@
 
 		$tab = $result->fetchAll();
 
-		var_dump($requete);
 
 		if (isset($_POST['insertMedicament'])) {
 			echo $_POST['insertMedicament'];
@@ -68,7 +66,7 @@
 			$insert->execute(array("idMedic" => $_POST['insertMedicament']));
 		}
 		if (isset($_POST['supprimer'])) {
-			echo $_POST['supprimer'];
+			
 			$pdo->query("DELETE FROM ordonnance");
 		}
 
@@ -78,165 +76,178 @@
 
 	}
 	?>
-	<table class="entete largeur100">
-		<tr>
-			<!--- Ligne d'Entete -->
-			<td class="largeurColonne20 sansCadre texteCentre">
-				<!--- Colonne Logo -->
-				<a href="../index.html" ><img src="../images/medicaments2.jpg" id="imageHaut"/></a>
-			</td>
-			<td class="sansCadre texteCentre">
-				<!--- Colonne Titre -->
-				<h1>APPLICATION<br/>MEDILOG</h1>
-			</td>
-		</tr>
+	<div class="col-md-10 d-flex justify-content-center">
+		<table class="entete largeur100">
+			<tr>
+				<!--- Ligne d'Entete -->
+				<td class="largeurColonne20 sansCadre texteCentre">
+					<!--- Colonne Logo -->
+					<a href="../index.html" ><img src="../images/medicaments2.jpg" id="imageHaut"/></a>
+				</td>
+				<td class="sansCadre texteCentre">
+					<!--- Colonne Titre -->
+					<h1>APPLICATION<br/>MEDILOG</h1>
+				</td>
+			</tr>
 
-		<tr>
-			<!--- Ligne Présentation -->
-			<td colspan=2 class="largeur100 texteCentre" >
-				<!--- Colonne Présentation -->
-				<h2>
-					-- Création d'une ordonnance -- 
+			<tr>
+				<!--- Ligne Présentation -->
+				<td colspan=2 class="largeur100 texteCentre" >
+					<!--- Colonne Présentation -->
+					<h2>
+						-- Création d'une ordonnance -- 
+							
+
+					</h2>
+				</td>
+			</tr>
+		</table>
+		<table class="largeur100 contenu"> <!--- Table contenant le mode d'emploi et les images-->
+			<tr>
+				<!--- Ligne Formulaire de recherche -->
+				<td class="largeurColonne40">
+					<h1>Recherche</h1>
 					<form method="post">
-						<input type="hidden" name="supprimer" value="test">
+						Désignation à rechercher :
+						<input type="hidden" name="lab" value="TOUS">
+						<input type="hidden" name="typeMedic" value="TOUS">
+						<input type="hidden" name="Designation" value="">
 						<button type="submit">
 							<span class="material-symbols-outlined">
 								delete
 							</span>
 						</button>
 					</form>
-					
-				</h2>
-			</td>
-		</tr>
-	</table>
-	<table class="largeur100 contenu"> <!--- Table contenant le mode d'emploi et les images-->
-		<tr>
-			<!--- Ligne Formulaire de recherche -->
-			<td class="largeurColonne40">
-				<h1>Recherche</h1>
-				<form method="post">
-					Désignation à rechercher :
-					<input type="hidden" name="lab" value="TOUS">
-					<input type="hidden" name="typeMedic" value="TOUS">
-					<input type="hidden" name="Designation" value="">
-					<button type="submit">
-						<span class="material-symbols-outlined">
-							delete
-						</span>
-					</button>
-				</form>
-				<form method="post" action="#" ID="formRecherche">
-					<h2>
-						
+					<form method="post" action="#" ID="formRecherche">
+						<h2>
 
-						<input class="form-control" name="Designation" id="Designation" value="<?php if (isset($_POST['Designation'])) { echo $_POST['Designation']; } ?>" placeholder="Tapez un mot à rechercher">
 
-						Type de médicament : 
-						<select ID="typeMedic" name="typeMedic" class="form-control">
-							<option>TOUS</option>
-							<?php
-							foreach($tabTypes as $i) {
-								if (isset($_POST['typeMedic']) && $_POST['typeMedic'] == $i['type']) {
-									echo "<option selected='selected'>" . $i['type'] . "</option>";
-								} else {
-									echo "<option>" . $i['type'] . "</option>";
+							<input class="form-control" name="Designation" id="Designation" value="<?php if (isset($_POST['Designation'])) { echo $_POST['Designation']; } ?>" placeholder="Tapez un mot à rechercher">
+
+							Type de médicament : 
+							<select ID="typeMedic" name="typeMedic" class="form-control">
+								<option>TOUS</option>
+								<?php
+								foreach($tabTypes as $i) {
+									if (isset($_POST['typeMedic']) && $_POST['typeMedic'] == $i['type']) {
+										echo "<option selected='selected'>" . $i['type'] . "</option>";
+									} else {
+										echo "<option>" . $i['type'] . "</option>";
+									}
+
 								}
+								?>
+							</select><br/>
+							Laboratoire : 
+							<select ID="labo" name="lab" class="form-control">
+								<option>TOUS</option>
+								<?php
 
-							}
-							?>
-						</select><br/>
-						Laboratoire : 
-						<select ID="labo" name="lab" class="form-control">
-							<option>TOUS</option>
-							<?php
-
-							foreach($tabLab as $i) {
-								if (isset($_POST['lab']) && $_POST['lab'] == $i['labo']) {
-									echo "<option selected='selected'>" . $i['labo'] . "</option>";
-								} else {
-									echo "<option>" . $i['labo'] . "</option>";
+								foreach($tabLab as $i) {
+									if (isset($_POST['lab']) && $_POST['lab'] == $i['labo']) {
+										echo "<option selected='selected'>" . $i['labo'] . "</option>";
+									} else {
+										echo "<option>" . $i['labo'] . "</option>";
+									}
 								}
-							}
+								?>
+							</select><br/>
+							<input type="submit" class="form-control btn btn-info"></input>
+						</h2>												
+					</form>
+				</td>	
+				<td>
+					<h1>Ordonnance</h1> <!-- Ligne contenu de l'ordonnance -->
+					<form method="post">
+							<input type="hidden" name='typeMedic' value="<?php if($conditionMedic) { echo $_POST['typeMedic']; } else { echo "TOUS";}?>">
+							<input name='lab' type='hidden' value="<?php if($conditionLab) { echo $_POST['lab']; } else { echo "TOUS";}?>">
+							<input type="hidden" name="supprimer" value="test">
+							<input type="hidden" name="Designation"  value="<?php if (isset($_POST['Designation'])) { echo $_POST['Designation']; } ?>">
+							<button type="submit">
+								<span class="material-symbols-outlined">
+									delete
+								</span>
+							</button>
+						</form>
+					<table class="largeur100 table-striped">
+						<tr>
+							<th>Désignation</th>
+							<th>Présentation</th>
+							<th>Laboratoire</th>
+						</tr>
+						<?php 
+						$ordo = $pdo->query("SELECT * FROM ordonnance
+							JOIN medicaments
+							ON ordonnance.idMedicament = medicaments.id");
+						while ($ligne = $ordo->fetch()) {
+
+							echo "<tr>"
+							."<td>" .$ligne['Designation'] . "</td>"
+							."<td>" .$ligne['Type'] . "</td>"
+							."<td>" .$ligne['Labo'] . "</td>"
+							."</tr>";
+						}
+						?>
+					</table>
+				</td>			
+			</tr>
+		</table>
+		<table class="largeur100 contenu">
+			<tr>
+				<!--- Ligne Résultat de la recherche -->
+				<td>
+					<table class="table table-striped contenu">
+						<?php
+
+						foreach($tab as $i) {
+
+							echo "<tr>"
+							. "<td>" . $i['designation'] . "</td>"
+							. "<td>" . $i['type'] . "</td>"
+							. "<td>" . $i['labo'] . "</td>";
 							?>
-						</select><br/>
-						<input type="submit" class="form-control btn btn-info"></input>
-					</h2>												
-				</form>
-			</td>	
-			<td>
-				<h1>Ordonnance</h1> <!-- Ligne contenu de l'ordonnance -->
-				<table class="largeur100 table-striped">
-					<tr>
-						<th>Désignation</th>
-						<th>Présentation</th>
-						<th>Laboratoire</th>
-					</tr>
-					<?php 
-					$ordo = $pdo->query("SELECT * FROM ordonnance
-						JOIN medicaments
-						ON ordonnance.idMedicament = medicaments.id");
-					while ($ligne = $ordo->fetch()) {
+							<td> <form method='POST' action='#'>
+								<input name='insertMedicament' type='hidden' value="<?php  echo $i['id']; ?>">
+								<input name='lab' type='hidden' value="<?php if($conditionLab) { echo $i['labo']; } else { echo "TOUS";}?>">
+								<input type="hidden" name='typeMedic' value="<?php if($conditionMedic) { echo $i['type']; } else { echo "TOUS";}?>">
+								<input type='hidden' name='Designation' value="<?php if (isset($_POST['Designation'])) { echo $_POST['Designation']; } ?>">
+								<button type='submit' class='form-control btn btn-info' name='AddMedoc' value='AddMedoc' />
+								<span class='material-symbols-outlined'>
+									shopping_cart
+								</span>
+							</button>
+						</form>
+					</td>
+				</tr>
+				<?php
+			} 
+			?>
+		</table>
+	</td>			
+</tr>		
+</table>
 
-						echo "<tr>"
-						."<td>" .$ligne['Designation'] . "</td>"
-						."<td>" .$ligne['Type'] . "</td>"
-						."<td>" .$ligne['Labo'] . "</td>"
-						."</tr>";
-					}
-					?>
-				</table>
-			</td>			
-		</tr>
-	</table>
-	<table class="largeur100 contenu">
-		<tr>
-			<!--- Ligne Résultat de la recherche -->
-			<td>
-				<table class="table table-striped contenu">
-					<?php
-
-					foreach($tab as $i) {
-
-						echo "<tr>" 
-						. "<td>" . $i['designation'] . "</td>"
-						. "<td>" . $i['type'] . "</td>"
-						. "<td>" . $i['labo'] . "</td>"
-						."<td> <form method='POST' action='#'>
-						<input name='insertMedicament' type='hidden' value=". $i['id'].">
-						<input name='Labo' type='hidden' value=". $i['labo'] .">
-						<button type='submit' class='form-control btn btn-info' name='AddMedoc' value='AddMedoc' /><span class='material-symbols-outlined'>
-						shopping_cart
-						</span></button>
-						</form></td>"
-						."</tr>";
-					} 
-					?>
-				</table>
-			</td>			
-		</tr>		
-	</table>
-
-	<table class="largeur100 basDePage">   <!--- Table contenant le menu et le logo de l'iut-->
-		<tr>
-			<!--- Ligne Menu Bas -->
-			<td class="largeurColonne80 texteCentre">
-				<!--- Menu Bas -->
-				<div class="texte">
-					Menu : 
-					<a href="../index.html" >Accueil</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-					<a href="recherche.php">Recherche d'un médicament</a>   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-					<a href="ordonnance.php">Création ordonnance</a>   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-				</div>
-			</td>
-			<td class="texteCentre">
-				<!--- Logo et lien IUT -->
-				<div class="texte">
-					<br/>Réalisé par <br/><a href="http://www.iut-rodez.fr" target="_blank"><img src="../images/LogoIut.png" alt="Logo IUT Rodez" ID="logoIUT"/></a><br/><br/>
-				</div>
-			</td>				
-		</tr>
-	</table>
+<table class="largeur100 basDePage">   <!--- Table contenant le menu et le logo de l'iut-->
+	<tr>
+		<!--- Ligne Menu Bas -->
+		<td class="largeurColonne80 texteCentre">
+			<!--- Menu Bas -->
+			<div class="texte">
+				Menu : 
+				<a href="../index.html" >Accueil</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<a href="recherche.php">Recherche d'un médicament</a>   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<a href="ordonnance.php">Création ordonnance</a>   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			</div>
+		</td>
+		<td class="texteCentre">
+			<!--- Logo et lien IUT -->
+			<div class="texte">
+				<br/>Réalisé par <br/><a href="http://www.iut-rodez.fr" target="_blank"><img src="../images/LogoIut.png" alt="Logo IUT Rodez" ID="logoIUT"/></a><br/><br/>
+			</div>
+		</td>				
+	</tr>
+</table>
+</div>
 
 </body>
 </html>
