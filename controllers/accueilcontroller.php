@@ -43,7 +43,6 @@ use yasmf\HttpHelper;
 class AccueilController
 {
   private $usersService;
-
     public function __construct()
     {
         $this->usersService = UsersService::getDefaultUsersService();
@@ -51,16 +50,16 @@ class AccueilController
 
     public function index($pdo) {      
 
-      $view = new View("MEDILOG/views/accueil");
+      $view = new View("MEDILOG/views/connexion");
 
       return $view;
     }
 
     public function searchPage($pdo) {      
 
-      $Designation = HttpHelper::getParam('Designation');
-      $typeMedic = HttpHelper::getParam('typeMedic');
-      $lab = HttpHelper::getParam('lab');
+      $Designation = htmlspecialchars(HttpHelper::getParam('Designation'));
+      $typeMedic = htmlspecialchars(HttpHelper::getParam('typeMedic'));
+      $lab = htmlspecialchars(HttpHelper::getParam('lab'));
 
       $view = new View("MEDILOG/views/recherche");
       $stmt = $this->usersService->getContent($pdo);
@@ -70,6 +69,8 @@ class AccueilController
       $tab = $this->usersService->constructSQL($pdo,$lab,$typeMedic,$Designation);
 
       $view->setVar("tab",$tab);
+
+      $view = $this->verifConn($view);
 
       return $view;
     }
@@ -99,8 +100,34 @@ class AccueilController
       $tab = $this->usersService->constructSQL($pdo,$lab,$typeMedic,$Designation);
 
       $view->setVar("tab",$tab);
+      $view = $this->verifConn($view);
+      return $view;
+    }
+
+    public function connexion($pdo)
+    {
+      $login = HttpHelper::getParam("login");
+      $password = HttpHelper::getParam("password");
+      $tryConnection = $this->usersService->connexion($pdo,$login,$password);
+      $view = new View("MEDILOG/views/connexion");
+      if ($tryConnection) {
+        $_SESSION['login'] = $login;
+        $this->id = session_id();
+        $view = new View("MEDILOG/views/accueil");
+
+      }
 
       return $view;
     }
+
+    public function verifConn($view)
+    {
+      if (!isset($_SESSION['id'])) {
+        $view = new View("MEDILOG/views/connexion");
+      }
+      return $view;
+    }
+
+    
 
 }

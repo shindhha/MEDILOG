@@ -76,6 +76,18 @@ class UsersService
   {
     $pdo->query("DELETE FROM ordonnance");
   }
+
+  public function connexion($pdo,$login,$password)
+    {
+      $sql = "SELECT * 
+              FROM connexion
+              WHERE login = :login AND password = :password";
+
+      $stmt = $pdo->prepare($sql);
+      $stmt->execute(array('login' => $login,'password' => $password ));
+      $nbRow = $stmt->rowcount();
+      return $nbRow >= 1;
+    }
   private static $defaultUsersService;
 
   public static function getDefaultUsersService()
